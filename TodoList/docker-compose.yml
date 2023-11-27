@@ -1,0 +1,18 @@
+﻿version: '3'
+services:
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "TodoList123!"
+    ports:
+      - "1433:1433"
+  api:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile_Prod
+    restart: always
+    depends_on:
+      - sql-server
+    ports:
+      - "8080:80"

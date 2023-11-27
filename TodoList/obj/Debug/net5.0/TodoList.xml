@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TodoList</name>
+    </assembly>
+    <members>
+        <member name="M:TodoList.Services.ExtensionMethods.getUserId(System.Security.Claims.ClaimsPrincipal)">
+            <summary>
+            User ID
+            </summary>
+            <param name="user"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
