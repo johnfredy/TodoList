@@ -14,7 +14,7 @@ namespace TodoList.Utils
         {
             CreateMap<UserLoginDTO, UserLogin>();
             CreateMap<UserLogin, UserDTO>();
-            CreateMap<TareaCracionDTO, Tarea>();
+            CreateMap<TareaCreacionDTO, Tarea>();
             CreateMap<Tarea, TareaDTO>();
             CreateMap<Tarea, TareaUserDTO>()
                 .ForMember(x => x.Nombre, options => options.MapFrom(c => c.Nombre))

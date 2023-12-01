@@ -32,36 +32,49 @@ namespace TodoList.Controllers
         [HttpGet]
         public async Task<ActionResult<List<TareaDTO>>> Get()
         {
-            var tareas = await context.Tarea.ToListAsync();
-            return mapper.Map<List<TareaDTO>>(tareas);
+            var tarea = await context.Tarea.ToListAsync();
+            if (tarea == null)
+                return NotFound("tarea no registrado.");
+
+            return mapper.Map<List<TareaDTO>>(tarea);
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult<List<TareaUserDTO>>> Get(int id)
+        //[Authorize]
+        [HttpGet("obtenerTarea", Name = "obtenerTarea/{id}")]
+        public async Task<ActionResult<TareaUserDTO>> GetTarea(int id){
+            var tareas = await context.Tarea.FirstOrDefaultAsync(x => x.Id == id);
+
+
+            return mapper.Map<TareaUserDTO>(tareas);
+        }
+
+        [Authorize]
+        [HttpGet("{id}")]
+        public async Task<ActionResult<List<TareaUserDTO>>> Get(string id)
         {
-            var agente = await context.UserLogin.FirstOrDefaultAsync(x => x.Id == id);
+            var agente = await context.UserLogin.FirstOrDefaultAsync(x => x.Correo == id);
             if (agente == null)
                 return NotFound("Usuario no registrado.");
 
-            var tareas = await context.Tarea.Include(x => x.UserLogin).Where(x => x.UserLogin.Id == id).ToListAsync();
+            var tareas = await context.Tarea.Include(x => x.UserLogin).Where(x => x.UserLogin.Id == agente.Id).ToListAsync();
 
             if (tareas.Count == 0)
-                return NotFound("El usuario no cuenta con tareas.");
+                return mapper.Map<List<TareaUserDTO>>(tareas);
 
             return mapper.Map<List<TareaUserDTO>>(tareas);
         }
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult> Post([FromBody] TareaCracionDTO tareaCreacionDTO)
+        public async Task<ActionResult> Post([FromBody] TareaCreacionDTO tareaCreacionDTO)
         {
-            if (tareaCreacionDTO.UsuarioId == 0)
-                return BadRequest("No se puede crear un libro sin autor");
+            //if (tareaCreacionDTO.Usuario != "")
+            //    return BadRequest("No se puede crear un libro sin autor");
 
-            var existe = await context.Tarea.AnyAsync(x => x.Nombre == tareaCreacionDTO.Nombre);
+            var existe = await context.Tarea.AnyAsync(x => x.Nombre == tareaCreacionDTO.Nombre && x.UserLogin.Correo == tareaCreacionDTO.Usuario);
             if (existe)
                 return BadRequest($"Ya existe una tarea con el nombre {tareaCreacionDTO.Nombre}");
 
-            var usuarioIds = await context.UserLogin.FirstOrDefaultAsync(x => x.Id ==tareaCreacionDTO.UsuarioId);
+            var usuarioIds = await context.UserLogin.FirstOrDefaultAsync(x => x.Correo == tareaCreacionDTO.Usuario);
 
             if (usuarioIds == null)
                 return BadRequest($"Usuario no registrado");
@@ -76,6 +89,7 @@ namespace TodoList.Controllers
             return Ok();
         }
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<ActionResult> Put([FromBody] TareaDTO tareaDTO, int id)
         {
             var tarea = await context.Tarea.Include(x => x.UserLogin).FirstOrDefaultAsync(x => x.Id == id);

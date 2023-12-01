@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TodoList.DTO
 {
-    public class TareaCracionDTO
+    public class TareaCreacionDTO
     {
         [Required]
         [StringLength(70, ErrorMessage = "El campo {0} no debe exceder de {1} caracteres.")]
@@ -15,6 +15,6 @@ namespace TodoList.DTO
         [StringLength(70, ErrorMessage = "El campo {0} no debe exceder de {1} caracteres.")]
         public string Descripcion { get; set; }
         [Required]
-        public int UsuarioId { get; set; }
+        public String Usuario { get; set; }
     }
 }

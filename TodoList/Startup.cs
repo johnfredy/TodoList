@@ -99,6 +99,13 @@ namespace TodoList
                 options.DefaultPolicy =
                 new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme).RequireAuthenticatedUser().Build()
             );
+
+            //Habilitacion de CORS
+            services.AddCors(options =>
+               options.AddDefaultPolicy(x => x.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader()
+              .WithExposedHeaders(new string[] { "cantidadTotalRegistros" }))
+            );
+
             services.AddScoped(typeof(IAuthService), typeof(AuthService));//inyectando servicio
             services.AddSession();
             services.AddMvc();
